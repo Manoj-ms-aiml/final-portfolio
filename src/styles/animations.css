@@ -1,0 +1,131 @@
+@keyframes fireball-glow {
+  0% {
+    box-shadow: 0 0 20px #FFD700,
+                0 0 40px #FFD700,
+                0 0 60px #FFD700;
+  }
+  50% {
+    box-shadow: 0 0 30px #FFD700,
+                0 0 60px #FFD700,
+                0 0 90px #FFD700;
+  }
+  100% {
+    box-shadow: 0 0 20px #FFD700,
+                0 0 40px #FFD700,
+                0 0 60px #FFD700;
+  }
+}
+
+@keyframes tech-fireball-glow {
+  0% {
+    box-shadow: 0 0 20px #00FFFF,
+                0 0 40px #00FFFF,
+                0 0 60px #00FFFF;
+  }
+  50% {
+    box-shadow: 0 0 30px #00FFFF,
+                0 0 60px #00FFFF,
+                0 0 90px #00FFFF;
+  }
+  100% {
+    box-shadow: 0 0 20px #00FFFF,
+                0 0 40px #00FFFF,
+                0 0 60px #00FFFF;
+  }
+}
+
+.fireball {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 50%, transparent 70%);
+}
+
+.fireball-1 {
+  animation: fireball-glow 2s ease-in-out infinite;
+  background: radial-gradient(circle, #FFD700 0%, rgba(255,215,0,0.4) 50%, transparent 70%);
+}
+
+.fireball-2 {
+  animation: tech-fireball-glow 2s ease-in-out infinite;
+  background: radial-gradient(circle, #00FFFF 0%, rgba(0,255,255,0.4) 50%, transparent 70%);
+}
+
+.theatrical .fireball-1 {
+  animation: fireball-glow 2s ease-in-out infinite;
+  background: radial-gradient(circle, #FFD700 0%, rgba(255,215,0,0.4) 50%, transparent 70%);
+}
+
+.theatrical .fireball-2 {
+  animation: fireball-glow 2s ease-in-out infinite;
+  background: radial-gradient(circle, #DC143C 0%, rgba(220,20,60,0.4) 50%, transparent 70%);
+}
+
+.tech .fireball-1 {
+  animation: tech-fireball-glow 2s ease-in-out infinite;
+  background: radial-gradient(circle, #00FFFF 0%, rgba(0,255,255,0.4) 50%, transparent 70%);
+}
+
+.tech .fireball-2 {
+  animation: tech-fireball-glow 2s ease-in-out infinite;
+  background: radial-gradient(circle, #8A2BE2 0%, rgba(138,43,226,0.4) 50%, transparent 70%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  pointer-events: auto;
+}
+
+.role-text {
+  position: absolute;
+  top: calc(100% + 20px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  white-space: nowrap;
+  text-shadow: 0 0 10px currentColor;
+  z-index: 10;
+}
+
+.role-text.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.role-icon {
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.role-icon:hover {
+  transform: scale(1.1);
+}
+
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fireball-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+} 
