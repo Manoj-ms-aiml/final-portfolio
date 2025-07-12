@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { Brain, Code, Globe, Wrench, Heart } from 'lucide-react';
+import { Brain, Code, Globe, Wrench, Heart, Play, Pause, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { skills } from '../../data/skills';
 
@@ -26,12 +26,73 @@ export const SkillsSection: React.FC = () => {
   const [ref, inView] = useInView({ threshold: 0.1, triggerOnce: true });
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
+  const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   const sphereRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const categories = Array.from(new Set(skills.map(skill => skill.category)));
+  const categories = ['all', ...Array.from(new Set(skills.map(skill => skill.category)))];
   const filteredSkills = selectedCategory === 'all' 
     ? skills 
     : skills.filter(skill => skill.category === selectedCategory);
+
+  // Auto-presentation logic
+  useEffect(() => {
+    if (isAutoPlaying && isPresentationMode && categories.length > 1) {
+      intervalRef.current = setInterval(() => {
+        setCurrentCategoryIndex((prev) => {
+          const nextIndex = (prev + 1) % categories.length;
+          setSelectedCategory(categories[nextIndex]);
+          return nextIndex;
+        });
+      }, 4000); // 4 seconds per category
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isAutoPlaying, isPresentationMode, categories.length]);
+
+  // Start presentation mode when section comes into view
+  useEffect(() => {
+    if (inView && !isPresentationMode) {
+      setIsPresentationMode(true);
+    }
+  }, [inView]);
+
+  const nextCategory = () => {
+    const nextIndex = (currentCategoryIndex + 1) % categories.length;
+    setCurrentCategoryIndex(nextIndex);
+    setSelectedCategory(categories[nextIndex]);
+  };
+
+  const prevCategory = () => {
+    const prevIndex = (currentCategoryIndex - 1 + categories.length) % categories.length;
+    setCurrentCategoryIndex(prevIndex);
+    setSelectedCategory(categories[prevIndex]);
+  };
+
+  const handleCategoryClick = (category: string) => {
+    setIsAutoPlaying(false);
+    setIsPresentationMode(false);
+    setSelectedCategory(category);
+    setCurrentCategoryIndex(categories.indexOf(category));
+  };
+
+  const toggleAutoPlay = () => {
+    setIsAutoPlaying(!isAutoPlaying);
+    if (!isAutoPlaying) {
+      setIsPresentationMode(true);
+    }
+  };
 
   useEffect(() => {
     if (inView && sphereRef.current) {
@@ -149,10 +210,88 @@ export const SkillsSection: React.FC = () => {
             </motion.p>
           </motion.div>
 
+          {/* Auto-play Controls */}
+          <motion.div variants={itemVariants} className="flex items-center justify-center space-x-4 mb-8">
+            <motion.button
+              onClick={prevCategory}
+              className={`p-2 sm:p-3 rounded-full backdrop-blur-sm border transition-all duration-300 ${
+                theme.mode === 'theatrical'
+                  ? 'bg-theatrical-gold/20 border-theatrical-gold/30 hover:bg-theatrical-gold/30'
+                  : 'bg-tech-cyan/20 border-tech-cyan/30 hover:bg-tech-cyan/30'
+              }`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <ChevronLeft size={20} color={theme.primaryColor} />
+            </motion.button>
+
+            <motion.button
+              onClick={toggleAutoPlay}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full backdrop-blur-sm border transition-all duration-300 ${
+                theme.mode === 'theatrical'
+                  ? 'bg-theatrical-crimson/20 border-theatrical-crimson/30 hover:bg-theatrical-crimson/30'
+                  : 'bg-neural-purple/20 border-neural-purple/30 hover:bg-neural-purple/30'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isAutoPlaying ? (
+                <Pause size={16} color={theme.mode === 'theatrical' ? '#DC143C' : '#8A2BE2'} />
+              ) : (
+                <Play size={16} color={theme.mode === 'theatrical' ? '#DC143C' : '#8A2BE2'} />
+              )}
+              <span className="text-sm font-tech text-white/70">
+                {isAutoPlaying ? 'Pause' : 'Play'}
+              </span>
+            </motion.button>
+
+            <div className="text-center">
+              <span className="text-white/60 font-tech text-sm">
+                {currentCategoryIndex + 1} / {categories.length}
+              </span>
+              {isAutoPlaying && (
+                <div className="flex items-center space-x-1 mt-1">
+                  <Clock size={12} className="text-white/40" />
+                  <span className="text-xs text-white/40">Auto</span>
+                </div>
+              )}
+            </div>
+
+            <motion.button
+              onClick={nextCategory}
+              className={`p-2 sm:p-3 rounded-full backdrop-blur-sm border transition-all duration-300 ${
+                theme.mode === 'theatrical'
+                  ? 'bg-theatrical-gold/20 border-theatrical-gold/30 hover:bg-theatrical-gold/30'
+                  : 'bg-tech-cyan/20 border-tech-cyan/30 hover:bg-tech-cyan/30'
+              }`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <ChevronRight size={20} color={theme.primaryColor} />
+            </motion.button>
+          </motion.div>
+
+          {/* Progress Bar */}
+          {isAutoPlaying && (
+            <div className="w-full h-1 bg-white/20 rounded-full mb-8 mx-4">
+              <motion.div
+                className={`h-full rounded-full ${
+                  theme.mode === 'theatrical'
+                    ? 'bg-gradient-to-r from-theatrical-gold to-theatrical-crimson'
+                    : 'bg-gradient-to-r from-tech-cyan to-neural-purple'
+                }`}
+                initial={{ width: '0%' }}
+                animate={{ width: '100%' }}
+                transition={{ duration: 4, ease: 'linear' }}
+                key={currentCategoryIndex}
+              />
+            </div>
+          )}
+
           {/* Category Filter */}
           <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 px-4">
             <motion.button
-              onClick={() => setSelectedCategory('all')}
+              onClick={() => handleCategoryClick('all')}
               className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full font-tech font-medium transition-all duration-300 text-xs sm:text-sm ${
                 selectedCategory === 'all'
                   ? theme.mode === 'theatrical'
@@ -166,12 +305,12 @@ export const SkillsSection: React.FC = () => {
               <span>All Skills</span>
             </motion.button>
             
-            {categories.map((category) => {
+            {Object.keys(categoryIcons).map((category) => {
               const IconComponent = categoryIcons[category as keyof typeof categoryIcons];
               return (
                 <motion.button
                   key={category}
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => handleCategoryClick(category)}
                   className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full font-tech font-medium transition-all duration-300 text-xs sm:text-sm ${
                     selectedCategory === category
                       ? theme.mode === 'theatrical'

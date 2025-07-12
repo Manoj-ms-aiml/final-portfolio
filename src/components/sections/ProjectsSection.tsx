@@ -1,21 +1,53 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { ExternalLink, Github, Play, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ExternalLink, Github, Play, Pause, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useSmoothScroll } from '../../hooks/useSmoothScroll';
 import { projects } from '../../data/projects';
 import { Project } from '../../types';
 
 export const ProjectsSection: React.FC = () => {
   const { theme } = useTheme();
+  const { scrollTo } = useSmoothScroll();
   const [ref, inView] = useInView({ threshold: 0.2, triggerOnce: true });
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [filter, setFilter] = useState<string>('all');
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const filteredProjects = filter === 'all' 
     ? projects 
     : projects.filter(project => project.category === filter);
+
+  // Auto-presentation logic
+  useEffect(() => {
+    if (isAutoPlaying && isPresentationMode && filteredProjects.length > 1) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % filteredProjects.length);
+      }, 3000); // 3 seconds per project
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isAutoPlaying, isPresentationMode, filteredProjects.length]);
+
+  // Start presentation mode when section comes into view
+  useEffect(() => {
+    if (inView && !isPresentationMode) {
+      setIsPresentationMode(true);
+    }
+  }, [inView]);
 
   const nextProject = () => {
     setCurrentIndex((prev) => (prev + 1) % filteredProjects.length);
@@ -23,6 +55,18 @@ export const ProjectsSection: React.FC = () => {
 
   const prevProject = () => {
     setCurrentIndex((prev) => (prev - 1 + filteredProjects.length) % filteredProjects.length);
+  };
+
+  const handleProjectClick = () => {
+    setIsAutoPlaying(false);
+    setIsPresentationMode(false);
+  };
+
+  const toggleAutoPlay = () => {
+    setIsAutoPlaying(!isAutoPlaying);
+    if (!isAutoPlaying) {
+      setIsPresentationMode(true);
+    }
   };
 
   const containerVariants = {
@@ -82,7 +126,7 @@ export const ProjectsSection: React.FC = () => {
         ) : (
           <>
             <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-gradient-radial from-neural-purple/20 to-transparent rounded-full animate-pulse" />
-            <div className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-gradient-radial from-tech-cyan/20 to-transparent rounded-full animate-pulse\" style={{ animationDelay: '1s' }} />
+            <div className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-gradient-radial from-tech-cyan/20 to-transparent rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
           </>
         )}
       </div>
@@ -142,6 +186,7 @@ export const ProjectsSection: React.FC = () => {
 
           {/* Projects Carousel */}
           <motion.div variants={itemVariants} className="relative">
+            {/* Controls */}
             <div className="flex items-center justify-between mb-8">
               <motion.button
                 onClick={prevProject}
@@ -156,10 +201,40 @@ export const ProjectsSection: React.FC = () => {
                 <ChevronLeft size={24} color={theme.primaryColor} />
               </motion.button>
 
-              <div className="text-center">
-                <span className="text-white/60 font-tech">
-                  {currentIndex + 1} / {filteredProjects.length}
-                </span>
+              <div className="flex items-center space-x-4">
+                {/* Auto-play toggle */}
+                <motion.button
+                  onClick={toggleAutoPlay}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full backdrop-blur-sm border transition-all duration-300 ${
+                    theme.mode === 'theatrical'
+                      ? 'bg-theatrical-crimson/20 border-theatrical-crimson/30 hover:bg-theatrical-crimson/30'
+                      : 'bg-neural-purple/20 border-neural-purple/30 hover:bg-neural-purple/30'
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {isAutoPlaying ? (
+                    <Pause size={16} color={theme.mode === 'theatrical' ? '#DC143C' : '#8A2BE2'} />
+                  ) : (
+                    <Play size={16} color={theme.mode === 'theatrical' ? '#DC143C' : '#8A2BE2'} />
+                  )}
+                  <span className="text-sm font-tech text-white/70">
+                    {isAutoPlaying ? 'Pause' : 'Play'}
+                  </span>
+                </motion.button>
+
+                {/* Progress indicator */}
+                <div className="text-center">
+                  <span className="text-white/60 font-tech">
+                    {currentIndex + 1} / {filteredProjects.length}
+                  </span>
+                  {isAutoPlaying && (
+                    <div className="flex items-center space-x-1 mt-1">
+                      <Clock size={12} className="text-white/40" />
+                      <span className="text-xs text-white/40">Auto</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <motion.button
@@ -176,6 +251,23 @@ export const ProjectsSection: React.FC = () => {
               </motion.button>
             </div>
 
+            {/* Progress Bar */}
+            {isAutoPlaying && (
+              <div className="w-full h-1 bg-white/20 rounded-full mb-8">
+                <motion.div
+                  className={`h-full rounded-full ${
+                    theme.mode === 'theatrical'
+                      ? 'bg-gradient-to-r from-theatrical-gold to-theatrical-crimson'
+                      : 'bg-gradient-to-r from-tech-cyan to-neural-purple'
+                  }`}
+                  initial={{ width: '0%' }}
+                  animate={{ width: '100%' }}
+                  transition={{ duration: 3, ease: 'linear' }}
+                  key={currentIndex}
+                />
+              </div>
+            )}
+
             {/* Project Cards */}
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
               <AnimatePresence mode="wait">
@@ -191,7 +283,10 @@ export const ProjectsSection: React.FC = () => {
                       ? 'bg-black/40 border-theatrical-gold/20 hover:border-theatrical-gold/40'
                       : 'bg-black/40 border-tech-cyan/20 hover:border-tech-cyan/40'
                   }`}
-                  onClick={() => setSelectedProject(filteredProjects[currentIndex])}
+                  onClick={() => {
+                    handleProjectClick();
+                    setSelectedProject(filteredProjects[currentIndex]);
+                  }}
                   style={{ transformStyle: 'preserve-3d' }}
                 >
                   {/* Project Image */}
