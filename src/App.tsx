@@ -5,6 +5,7 @@ import { AnimatedBackground } from './components/common/AnimatedBackground';
 import { HeroSection } from './components/sections/HeroSection';
 import { AboutSection } from './components/sections/AboutSection';
 import { ProjectsSection } from './components/sections/ProjectsSection';
+import { CertificatesSection } from './components/sections/CertificatesSection';
 import { ExperienceSection } from './components/sections/ExperienceSection';
 import { SkillsSection } from './components/sections/SkillsSection';
 import { ContactSection } from './components/sections/ContactSection';
@@ -28,6 +29,7 @@ function App() {
           <HeroSection />
           <AboutSection />
           <ProjectsSection />
+          <CertificatesSection />
           <ExperienceSection />
           <SkillsSection />
           <ContactSection />

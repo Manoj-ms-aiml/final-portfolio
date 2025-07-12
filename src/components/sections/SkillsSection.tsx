@@ -4,7 +4,6 @@ import { useInView } from 'react-intersection-observer';
 import { Brain, Code, Globe, Wrench, Heart } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { skills } from '../../data/skills';
-import { Skill } from '../../types';
 
 const categoryIcons = {
   'programming': Code,
@@ -24,7 +23,7 @@ const categoryNames = {
 
 export const SkillsSection: React.FC = () => {
   const { theme } = useTheme();
-  const [ref, inView] = useInView({ threshold: 0.2, triggerOnce: true });
+  const [ref, inView] = useInView({ threshold: 0.1, triggerOnce: true });
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
   const sphereRef = useRef<HTMLDivElement>(null);
@@ -36,7 +35,6 @@ export const SkillsSection: React.FC = () => {
 
   useEffect(() => {
     if (inView && sphereRef.current) {
-      // Create floating animation for skill orbs
       const skillOrbs = sphereRef.current.querySelectorAll('.skill-orb');
       skillOrbs.forEach((orb, index) => {
         const element = orb as HTMLElement;
@@ -86,7 +84,7 @@ export const SkillsSection: React.FC = () => {
       },
     },
     hover: {
-      scale: 1.2,
+      scale: 1.1,
       z: 50,
       transition: {
         type: 'spring',
@@ -97,7 +95,7 @@ export const SkillsSection: React.FC = () => {
   };
 
   return (
-    <section id="skills" ref={ref} className="relative py-20 lg:py-32 overflow-hidden">
+    <section id="skills" ref={ref} className="relative py-12 sm:py-16 md:py-20 lg:py-32 overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 opacity-10">
         {theme.mode === 'theatrical' ? (
@@ -124,17 +122,17 @@ export const SkillsSection: React.FC = () => {
         )}
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
-          className="space-y-16"
+          className="space-y-8 sm:space-y-12 md:space-y-16"
         >
           {/* Header */}
-          <motion.div variants={itemVariants} className="text-center space-y-6">
+          <motion.div variants={itemVariants} className="text-center space-y-4 sm:space-y-6">
             <motion.h2
-              className={`text-5xl lg:text-7xl font-dramatic font-bold ${
+              className={`text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-dramatic font-bold ${
                 theme.mode === 'theatrical'
                   ? 'bg-gradient-to-r from-theatrical-gold to-theatrical-crimson'
                   : 'bg-gradient-to-r from-tech-cyan to-neural-purple'
@@ -144,7 +142,7 @@ export const SkillsSection: React.FC = () => {
             </motion.h2>
             
             <motion.p
-              className="text-xl text-white/70 max-w-3xl mx-auto font-body leading-relaxed"
+              className="text-base sm:text-lg md:text-xl text-white/70 max-w-3xl mx-auto font-body leading-relaxed px-4"
             >
               A comprehensive toolkit spanning artificial intelligence, full-stack development, 
               and the soft skills gained from years of theatrical performance.
@@ -152,10 +150,10 @@ export const SkillsSection: React.FC = () => {
           </motion.div>
 
           {/* Category Filter */}
-          <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4">
+          <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 px-4">
             <motion.button
               onClick={() => setSelectedCategory('all')}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-full font-tech font-medium transition-all duration-300 ${
+              className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full font-tech font-medium transition-all duration-300 text-xs sm:text-sm ${
                 selectedCategory === 'all'
                   ? theme.mode === 'theatrical'
                     ? 'bg-theatrical-gold text-black'
@@ -174,7 +172,7 @@ export const SkillsSection: React.FC = () => {
                 <motion.button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`flex items-center space-x-2 px-6 py-3 rounded-full font-tech font-medium transition-all duration-300 ${
+                  className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full font-tech font-medium transition-all duration-300 text-xs sm:text-sm ${
                     selectedCategory === category
                       ? theme.mode === 'theatrical'
                         ? 'bg-theatrical-gold text-black'
@@ -184,20 +182,21 @@ export const SkillsSection: React.FC = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <IconComponent size={16} />
-                  <span>{categoryNames[category as keyof typeof categoryNames]}</span>
+                  <IconComponent size={14} className="sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">{categoryNames[category as keyof typeof categoryNames]}</span>
+                  <span className="sm:hidden">{category.replace('-', ' ')}</span>
                 </motion.button>
               );
             })}
           </motion.div>
 
-          {/* Skills Sphere/Grid */}
+          {/* Skills Grid */}
           <motion.div 
             ref={sphereRef}
             variants={itemVariants} 
-            className="relative min-h-[600px] flex items-center justify-center"
+            className="relative min-h-[400px] sm:min-h-[500px] md:min-h-[600px] flex items-center justify-center px-4"
           >
-            <div className="relative w-full max-w-5xl">
+            <div className="relative w-full max-w-6xl">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={selectedCategory}
@@ -205,7 +204,7 @@ export const SkillsSection: React.FC = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.5 }}
-                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 lg:gap-8"
+                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6 lg:gap-8"
                 >
                   {filteredSkills.map((skill, index) => (
                     <motion.div
@@ -223,13 +222,13 @@ export const SkillsSection: React.FC = () => {
                       }}
                     >
                       {/* Skill Card */}
-                      <div className={`relative p-6 rounded-2xl backdrop-blur-sm border transition-all duration-500 ${
+                      <div className={`relative p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl backdrop-blur-sm border transition-all duration-500 ${
                         theme.mode === 'theatrical'
                           ? 'bg-black/40 border-theatrical-gold/20 hover:border-theatrical-gold/60'
                           : 'bg-black/40 border-tech-cyan/20 hover:border-tech-cyan/60'
                       }`}>
                         {/* Glow Effect */}
-                        <div className={`absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                        <div className={`absolute -inset-0.5 rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
                           theme.mode === 'theatrical'
                             ? 'bg-gradient-to-r from-theatrical-gold/20 to-theatrical-crimson/20'
                             : 'bg-gradient-to-r from-tech-cyan/20 to-neural-purple/20'
@@ -237,7 +236,7 @@ export const SkillsSection: React.FC = () => {
 
                         {/* Skill Icon */}
                         <motion.div
-                          className="text-4xl mb-3 text-center"
+                          className="text-2xl sm:text-3xl md:text-4xl mb-2 sm:mb-3 text-center"
                           animate={{ 
                             rotate: hoveredSkill === skill.id ? 360 : 0,
                             scale: hoveredSkill === skill.id ? 1.2 : 1
@@ -249,7 +248,7 @@ export const SkillsSection: React.FC = () => {
 
                         {/* Skill Name */}
                         <motion.h3
-                          className={`text-center font-tech font-semibold mb-3 ${
+                          className={`text-center font-tech font-semibold mb-2 sm:mb-3 text-xs sm:text-sm md:text-base ${
                             theme.mode === 'theatrical' ? 'text-theatrical-gold' : 'text-tech-cyan'
                           }`}
                         >
@@ -258,7 +257,7 @@ export const SkillsSection: React.FC = () => {
 
                         {/* Proficiency Bar */}
                         <div className="relative">
-                          <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+                          <div className="w-full h-1.5 sm:h-2 bg-white/20 rounded-full overflow-hidden">
                             <motion.div
                               className={`h-full rounded-full ${
                                 theme.mode === 'theatrical'
@@ -266,17 +265,17 @@ export const SkillsSection: React.FC = () => {
                                   : 'bg-gradient-to-r from-tech-cyan to-neural-purple'
                               }`}
                               initial={{ width: 0 }}
-                              animate={{ width: `${skill.proficiency}` }}
+                              animate={{ width: `85%` }}
                               transition={{ delay: 0.5 + index * 0.1, duration: 1 }}
                             />
                           </div>
                           <motion.span
-                            className="absolute -top-6 right-0 text-xs font-tech text-white/60"
+                            className="absolute -top-4 sm:-top-6 right-0 text-xs font-tech text-white/60"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 1 + index * 0.1 }}
                           >
-                            {skill.proficiency}
+                            85%
                           </motion.span>
                         </div>
 
@@ -287,9 +286,9 @@ export const SkillsSection: React.FC = () => {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: 10 }}
-                              className="absolute -top-16 left-1/2 transform -translate-x-1/2 z-20"
+                              className="absolute -top-12 sm:-top-16 left-1/2 transform -translate-x-1/2 z-20"
                             >
-                              <div className={`px-3 py-2 rounded-lg text-xs font-tech whitespace-nowrap ${
+                              <div className={`px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs font-tech whitespace-nowrap ${
                                 theme.mode === 'theatrical'
                                   ? 'bg-theatrical-gold text-black'
                                   : 'bg-tech-cyan text-black'
@@ -310,7 +309,7 @@ export const SkillsSection: React.FC = () => {
           {/* Skills Summary */}
           <motion.div
             variants={itemVariants}
-            className="grid md:grid-cols-3 gap-8 mt-16"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-12 sm:mt-16 px-4"
           >
             {[
               { 
@@ -331,7 +330,7 @@ export const SkillsSection: React.FC = () => {
             ].map((stat, index) => (
               <motion.div
                 key={stat.title}
-                className={`text-center p-8 rounded-2xl backdrop-blur-sm border ${
+                className={`text-center p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl backdrop-blur-sm border ${
                   theme.mode === 'theatrical'
                     ? 'bg-black/40 border-theatrical-gold/20'
                     : 'bg-black/40 border-tech-cyan/20'
@@ -345,7 +344,7 @@ export const SkillsSection: React.FC = () => {
                 }}
               >
                 <motion.div
-                  className={`text-4xl font-bold font-tech mb-2 ${
+                  className={`text-2xl sm:text-3xl md:text-4xl font-bold font-tech mb-2 ${
                     theme.mode === 'theatrical' ? 'text-theatrical-gold' : 'text-tech-cyan'
                   }`}
                   initial={{ scale: 0 }}
@@ -354,10 +353,10 @@ export const SkillsSection: React.FC = () => {
                 >
                   {stat.count}+
                 </motion.div>
-                <h4 className="text-xl font-dramatic font-bold text-white mb-2">
+                <h4 className="text-lg sm:text-xl font-dramatic font-bold text-white mb-2">
                   {stat.title}
                 </h4>
-                <p className="text-white/60 font-body text-sm">
+                <p className="text-white/60 font-body text-xs sm:text-sm">
                   {stat.description}
                 </p>
               </motion.div>

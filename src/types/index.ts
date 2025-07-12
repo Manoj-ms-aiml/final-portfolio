@@ -33,6 +33,19 @@ export interface Skill {
   color: string;
 }
 
+export interface Certificate {
+  id: string;
+  title: string;
+  issuer: string;
+  date: string;
+  description: string;
+  image: string;
+  credentialId: string;
+  verificationUrl: string;
+  category: 'cloud' | 'ai-ml' | 'devops' | 'web-dev' | 'programming';
+  featured: boolean;
+}
+
 export interface ThemeConfig {
   mode: 'theatrical' | 'tech';
   primaryColor: string;

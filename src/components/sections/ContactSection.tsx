@@ -529,6 +529,40 @@ export const ContactSection: React.FC = () => {
               </motion.form>
             </motion.div>
           </div>
+
+          {/* Download CV Button */}
+          <motion.div
+            variants={itemVariants}
+            className="flex justify-center mt-8"
+          >
+            <motion.a
+              href="/cv/manoj-ms-cv.pdf"
+              download="Manoj_MS_CV.pdf"
+              className={`flex items-center space-x-3 px-8 py-4 rounded-full font-tech font-semibold transition-all duration-300 ${
+                theme.mode === 'theatrical'
+                  ? 'bg-gradient-to-r from-theatrical-crimson to-theatrical-gold text-white hover:shadow-2xl hover:shadow-theatrical-crimson/30'
+                  : 'bg-gradient-to-r from-neural-purple to-tech-electric text-white hover:shadow-2xl hover:shadow-neural-purple/30'
+              }`}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <svg 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7,10 12,15 17,10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Download CV</span>
+            </motion.a>
+          </motion.div>
         </motion.div>
       </div>
     </section>
