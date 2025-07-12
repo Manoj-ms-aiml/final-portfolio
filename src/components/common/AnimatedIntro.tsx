@@ -184,6 +184,7 @@ const PhotoAnimation = () => {
 =======
             src="public\img\manoj.jpg"
 >>>>>>> 0bacee4 (h)
+            src="/img/manoj.jpg"
             alt="MANOJ MS"
             className="w-full h-full object-cover animate-photo-zoom"
           />
