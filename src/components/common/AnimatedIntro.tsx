@@ -195,7 +195,9 @@ const PhotoAnimation = () => {
       </div>
       
       <h2 className="text-3xl md:text-4xl font-light text-blue-300 animate-type-in overflow-hidden whitespace-nowrap border-r-2 border-blue-300">
-        Software Developer & AI Enthusiast
+        Software Developer 
+              & 
+        AI Enthusiast
       </h2>
     </div>
   );
