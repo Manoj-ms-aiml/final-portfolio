@@ -179,7 +179,7 @@ const PhotoAnimation = () => {
       <div className="relative mb-8">
         <div className="w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-blue-400 animate-photo-reveal">
           <img
-            src="img\manoj.jpg"
+            src="https://drive.google.com/file/d/19nJs-j1nhQOKegXHr4SMdZb9sap8zsm_/view"
             alt="MANOJ MS"
             className="w-full h-full object-cover animate-photo-zoom"
           />
