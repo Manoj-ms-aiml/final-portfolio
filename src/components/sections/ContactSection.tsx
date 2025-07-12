@@ -536,7 +536,7 @@ export const ContactSection: React.FC = () => {
             className="flex justify-center mt-8"
           >
             <motion.a
-              href="/cv/manoj-ms-cv.pdf"
+              href="/cv/resume_manoj_ms.pdf"
               download="Manoj_MS_CV.pdf"
               className={`flex items-center space-x-3 px-8 py-4 rounded-full font-tech font-semibold transition-all duration-300 ${
                 theme.mode === 'theatrical'
